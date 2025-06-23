@@ -42,6 +42,12 @@
       navigator.geolocation.getCurrentPosition(position => {
         const lat = position.coords.latitude;
         const lng = position.coords.longitude;
+        const accuracy = position.coords.accuracy;
+
+
+        console.log(lat)
+        console.log(lng)
+        console.log(accuracy)
 
         // Show user's position on the map
         L.marker([lat, lng])
@@ -49,10 +55,12 @@
           .bindPopup("You are here")
           .openPopup();
 
+        L.circle([lat, lng], {radius: accuracy});
+
         map.setView([lat, lng], 16); // Zoom to user
       }, () => {
         alert("GPS access denied. Showing default view.");
-      });
+      }, {enableHighAccuracy: true, maximumAge: 0, timeout:5000});
     } else {
       alert("Geolocation not supported by your browser.");
     }
