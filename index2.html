@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Leaflet with Markers & GPS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    #map { height: 100vh; width: 100%; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    // Initialize map with default center
+    const map = L.map('map').setView([36.75, 3.06], 15);
+
+    // Load OSM tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Sample dynamic locations (can be loaded from API later)
+    const places = [
+      { name: 'Zoo Zone', lat: 36.751, lng: 3.065 },
+      { name: 'Big Oak Tree', lat: 36.753, lng: 3.068 },
+      { name: 'Restaurant Le Parc', lat: 36.748, lng: 3.063 },
+    ];
+
+    // Add markers from array
+    places.forEach(place => {
+      L.marker([place.lat, place.lng])
+        .addTo(map)
+        .bindPopup(place.name);
+    });
+
+    // Get user location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(position => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+
+        // Show user's position on the map
+        L.marker([lat, lng])
+          .addTo(map)
+          .bindPopup("You are here")
+          .openPopup();
+
+        map.setView([lat, lng], 16); // Zoom to user
+      }, () => {
+        alert("GPS access denied. Showing default view.");
+      });
+    } else {
+      alert("Geolocation not supported by your browser.");
+    }
+  </script>
+</body>
+</html>
