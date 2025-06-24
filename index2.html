@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
   <style>
     #map { height: 100vh; width: 100%; }
   </style>
@@ -14,28 +16,22 @@
 
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="./data/line.js"></script>
+<script src="./data/point.js"></script>
+<script src="./data/nepaldata.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+<script src="./data/usstates.js"></script>
   <script>
     // Initialize map with default center
     const map = L.map('map').setView([36.75, 3.06], 15);
 
     // Load OSM tiles
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
+    osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpensStreetMap</a> constributors'
+    })
+    osm.addTo(map);
 
-    // Sample dynamic locations (can be loaded from API later)
-    const places = [
-      { name: 'Zoo Zone', lat: 36.751, lng: 3.065 },
-      { name: 'Big Oak Tree', lat: 36.753, lng: 3.068 },
-      { name: 'Restaurant Le Parc', lat: 36.748, lng: 3.063 },
-    ];
-
-    // Add markers from array
-    places.forEach(place => {
-      L.marker([place.lat, place.lng])
-        .addTo(map)
-        .bindPopup(place.name);
-    });
 
     // Get user location
     if (navigator.geolocation) {
@@ -44,26 +40,31 @@
         const lng = position.coords.longitude;
         const accuracy = position.coords.accuracy;
 
+        map.setView([lat, lng], 16); // Zoom to user
 
-        console.log(lat)
-        console.log(lng)
-        console.log(accuracy)
 
         // Show user's position on the map
-        L.marker([lat, lng])
-          .addTo(map)
-          .bindPopup("You are here")
-          .openPopup();
+        const beginning_marker = L.marker([lat, lng])
+        beginning_marker.addTo(map).bindPopup("You are here").openPopup();
+        
 
-        L.circle([lat, lng], {radius: accuracy});
-
-        map.setView([lat, lng], 16); // Zoom to user
       }, () => {
         alert("GPS access denied. Showing default view.");
-      }, {enableHighAccuracy: true, maximumAge: 0, timeout:5000});
+      }, {enableHighAccuracy: true, maximumAge: 0});
     } else {
       alert("Geolocation not supported by your browser.");
     }
-  </script>
-</body>
+
+    const baseLayers = {
+  "OpenStreetMap": osm,
+};
+
+const overlays = {
+  "BeginningMarker": beginning_marker
+};
+
+    L.control.layers(baseLayers, overlays).addTo(map);
+
+    </script>
+  </body>
 </html>
