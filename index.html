@@ -176,17 +176,26 @@
         `;
         document.head.appendChild(style);
 
-        fetch('roads.geojson')
+        fetch('./data/roads.geojson')
         .then(res => res.json())
         .then(data => {
             L.geoJSON(data).addTo(map);
         });
 
-        fetch('points.geojson')
-        .then(res => res.json())
-        .then(data => {
-            L.geoJSON(data).addTo(map);
-        });
+        fetch('./data/points.geojson')
+    .then(res => res.json())
+    .then(data => {
+        L.geoJSON(data, {
+            onEachFeature: function (feature, layer) {
+                if (feature.properties) {
+                    let popupContent = `<b>Checkpoint ${feature.properties.name || ''}</b><br>`;
+                    
+                    
+                    layer.bindPopup(popupContent);
+                }
+            }
+        }).addTo(map);
+    });
 
         // Initialize geolocation when page loads
         window.onload = initGeolocation;
