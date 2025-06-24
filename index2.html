@@ -65,6 +65,18 @@ const overlays = {
 
     L.control.layers(baseLayers, overlays).addTo(map);
 
+    fetch('./data/roads.geojson')
+        .then(res => res.json())
+        .then(data => {
+            L.geoJSON(data).addTo(map);
+        })
+
+        fetch('./data/points.geojson')
+        .then(res => res.json())
+        .then(data => {
+            L.geoJSON(data).addTo(map);
+        })
+
     </script>
   </body>
 </html>
